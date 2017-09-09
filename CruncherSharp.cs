@@ -286,6 +286,8 @@ namespace CruncherSharp
                 ShowSymbolInfo(info);
         }
 
+        delegate void InsertCachelineBoundaryRowsDelegate(long nextOffset);
+
         void ShowSymbolInfo(SymbolInfo info)
         {
             dataGridViewSymbolInfo.Rows.Clear();
@@ -299,17 +301,10 @@ namespace CruncherSharp
                 prevCacheBoundaryOffset = (long)info.m_size;
 
             long numCacheLines = 0;
-            foreach (SymbolInfo child in info.m_children)
-            {
-                if (child.m_padding > 0)
-                {
-                    long paddingOffset = child.m_offset - child.m_padding;
-                    string[] paddingRow = { "*Padding*", paddingOffset.ToString(), child.m_padding.ToString() };
-                    dataGridViewSymbolInfo.Rows.Add(paddingRow);
-                }
 
-//                long childEndOffset = child.m_offset + (long)child.m_size;
-                while (child.m_offset - prevCacheBoundaryOffset >= cacheLineSize)
+            InsertCachelineBoundaryRowsDelegate InsertCachelineBoundaryRows = (nextOffset) =>
+            {
+                while (nextOffset - prevCacheBoundaryOffset >= cacheLineSize)
                 {
                     numCacheLines = numCacheLines + 1;
                     long cacheLineOffset = numCacheLines * cacheLineSize + m_prefetchStartOffset;
@@ -317,6 +312,21 @@ namespace CruncherSharp
                     dataGridViewSymbolInfo.Rows.Add(boundaryRow);
                     prevCacheBoundaryOffset = cacheLineOffset;
                 }
+            };
+
+            foreach (SymbolInfo child in info.m_children)
+            {
+                if (child.m_padding > 0)
+                {
+                    long paddingOffset = child.m_offset - child.m_padding;
+
+                    InsertCachelineBoundaryRows(paddingOffset);
+
+                    string[] paddingRow = { "*Padding*", paddingOffset.ToString(), child.m_padding.ToString() };
+                    dataGridViewSymbolInfo.Rows.Add(paddingRow);
+                }
+
+                InsertCachelineBoundaryRows(child.m_offset);
 
                 string[] row = { child.m_name, child.m_offset.ToString(), child.m_size.ToString() };
                 dataGridViewSymbolInfo.Rows.Add(row);
