@@ -350,8 +350,9 @@ namespace CruncherSharp
 
         private void dataGridViewSymbolInfo_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            foreach (DataGridViewRow row in dataGridViewSymbolInfo.Rows)
+            for (int i = 0; i < dataGridViewSymbolInfo.Rows.Count; ++i)
             {
+                DataGridViewRow row = dataGridViewSymbolInfo.Rows[i];
                 DataGridViewCell cell = row.Cells[0];
                 if (cell.Value.ToString() == "*Padding*")
                 {
@@ -370,6 +371,21 @@ namespace CruncherSharp
                     cell.Style.BackColor = Color.LightGray;
                     row.Cells[1].Style.BackColor = Color.LightGray;
                     row.Cells[2].Style.BackColor = Color.LightGray;
+                }
+                else if (i + 1 < dataGridViewSymbolInfo.Rows.Count)
+                {
+                    if (dataGridViewSymbolInfo.Rows[i+1].Cells[0].Value.ToString() == "Cacheline boundary")
+                    {
+                        UInt64 CachelineBoundary = UInt64.Parse(dataGridViewSymbolInfo.Rows[i + 1].Cells[1].Value.ToString());
+                        UInt64 MemberStart = UInt64.Parse(row.Cells[1].Value.ToString());
+                        UInt64 MemberSize = UInt64.Parse(row.Cells[2].Value.ToString());
+                        if (MemberStart + MemberSize > CachelineBoundary)
+                        {
+                            cell.Style.BackColor = Color.LightYellow;
+                            row.Cells[1].Style.BackColor = Color.LightYellow;
+                            row.Cells[2].Style.BackColor = Color.LightYellow;
+                        }
+                    }
                 }
             }
         }
