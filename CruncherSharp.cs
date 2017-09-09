@@ -451,7 +451,9 @@ namespace CruncherSharp
         private void textBoxCache_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter || e.KeyChar == (char)Keys.Escape)
+            {
                 ShowSelectedSymbolInfo();
+            }
             base.OnKeyPress(e);
         }
 
