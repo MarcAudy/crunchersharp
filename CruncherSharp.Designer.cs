@@ -212,7 +212,6 @@
             this.dataGridViewSymbolInfo.ContextMenuStrip = this.contextMenuStrip1;
             this.dataGridViewSymbolInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewSymbolInfo.Location = new System.Drawing.Point(0, 0);
-            this.dataGridViewSymbolInfo.MultiSelect = false;
             this.dataGridViewSymbolInfo.Name = "dataGridViewSymbolInfo";
             this.dataGridViewSymbolInfo.ReadOnly = true;
             this.dataGridViewSymbolInfo.RowHeadersVisible = false;
