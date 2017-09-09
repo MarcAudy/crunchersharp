@@ -146,7 +146,9 @@ namespace CruncherSharp
                 {
                     SymbolInfo childInfo;
                     if (ProcessChild(child, out childInfo))
+                    {
                         AddChild(childInfo);
+                    }
                 }
                 // Sort children by offset, recalc padding.
                 // Sorting is not needed normally (for data fields), but sometimes base class order is wrong.
@@ -170,16 +172,22 @@ namespace CruncherSharp
                 }
                 // LocIsThisRel || LocIsNull || LocIsBitField
                 if (symbol.locationType != 4 && symbol.locationType != 0 && symbol.locationType != 6)
+                {
                     return false;
+                }
 
                 ulong len = symbol.length;
                 IDiaSymbol typeSymbol = symbol.type;
                 if (typeSymbol != null)
+                {
                     len = typeSymbol.length;
+                }
 
                 string symbolName = symbol.name;
                 if (symbol.symTag == (uint)SymTagEnum.SymTagBaseClass)
+                {
                     symbolName = "Base: " + symbolName;
+                }
 
                 info.Set(symbolName, (typeSymbol != null ? typeSymbol.name : ""), len, symbol.offset);
 
@@ -217,7 +225,9 @@ namespace CruncherSharp
             void AddChild(SymbolInfo child)
             {
                 if (m_children == null)
+                {
                     m_children = new List<SymbolInfo>();
+                }
                 m_children.Add(child);
             }
             public bool IsBase()
@@ -229,15 +239,22 @@ namespace CruncherSharp
             {
                 // Base classes have to go first.
                 if (x.IsBase() && !y.IsBase())
+                {
                     return -1;
+                }
                 if (!x.IsBase() && y.IsBase())
+                {
                     return 1;
+                }
 
                 if (x.m_offset == y.m_offset)
                 {
                     return (x.m_size == y.m_size ? 0 : (x.m_size < y.m_size) ? -1 : 1);
                 }
-                else return (x.m_offset < y.m_offset) ? -1 : 1;
+                else
+                {
+                    return (x.m_offset < y.m_offset) ? -1 : 1;
+                }
             }
 
             public string m_name;
@@ -251,7 +268,9 @@ namespace CruncherSharp
         SymbolInfo FindSelectedSymbolInfo()
         {
             if (dataGridSymbols.SelectedRows.Count == 0)
+            {
                 return null;
+            }
 
             DataGridViewRow selectedRow = dataGridSymbols.SelectedRows[0];
             string symbolName = selectedRow.Cells[0].Value.ToString();
@@ -283,7 +302,9 @@ namespace CruncherSharp
             dataGridViewSymbolInfo.Rows.Clear();
             SymbolInfo info = FindSelectedSymbolInfo();
             if (info != null)
+            {
                 ShowSymbolInfo(info);
+            }
         }
 
         delegate void InsertCachelineBoundaryRowsDelegate(long nextOffset);
@@ -292,13 +313,17 @@ namespace CruncherSharp
         {
             dataGridViewSymbolInfo.Rows.Clear();
             if (!info.HasChildren())
+            {
                 return;
+            }
 
             long cacheLineSize = (long)GetCacheLineSize();
             long prevCacheBoundaryOffset = m_prefetchStartOffset;
 
             if (prevCacheBoundaryOffset > (long)info.m_size)
+            {
                 prevCacheBoundaryOffset = (long)info.m_size;
+            }
 
             long numCacheLines = 0;
 
@@ -404,10 +429,14 @@ namespace CruncherSharp
         {
 			try
 			{
-				if (textBoxFilter.Text.Length == 0)
-					bindingSourceSymbols.Filter = null;
-				else
-					bindingSourceSymbols.Filter = "Symbol LIKE '" + textBoxFilter.Text + "'";
+                if (textBoxFilter.Text.Length == 0)
+                {
+                    bindingSourceSymbols.Filter = null;
+                }
+                else
+                {
+                    bindingSourceSymbols.Filter = "Symbol LIKE '" + textBoxFilter.Text + "'";
+                }
 
 				textBoxFilter.BackColor = Color.Empty;
 				textBoxFilter.ForeColor = Color.Empty;
