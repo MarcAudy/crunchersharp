@@ -218,7 +218,9 @@ namespace CruncherSharp
                 if (HasChildren())
                 {
                     foreach (SymbolInfo info in m_children)
+                    {
                         totalPadding += info.m_padding;
+                    }
                 }
                 return totalPadding;
             }
