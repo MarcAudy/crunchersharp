@@ -304,7 +304,7 @@ namespace CruncherSharp
                 if (child.m_padding > 0)
                 {
                     long paddingOffset = child.m_offset - child.m_padding;
-                    string[] paddingRow = { "Padding", paddingOffset.ToString(), child.m_padding.ToString() };
+                    string[] paddingRow = { "*Padding*", paddingOffset.ToString(), child.m_padding.ToString() };
                     dataGridViewSymbolInfo.Rows.Add(paddingRow);
                 }
 
@@ -330,7 +330,7 @@ namespace CruncherSharp
             if (info.m_padding > 0)
             {
                 long paddingOffset = (long)info.m_size - info.m_padding;
-                string[] paddingRow = { "Padding", paddingOffset.ToString(), info.m_padding.ToString() };
+                string[] paddingRow = { "*Padding*", paddingOffset.ToString(), info.m_padding.ToString() };
                 dataGridViewSymbolInfo.Rows.Add(paddingRow);
             }
         }
@@ -353,7 +353,7 @@ namespace CruncherSharp
             foreach (DataGridViewRow row in dataGridViewSymbolInfo.Rows)
             {
                 DataGridViewCell cell = row.Cells[0];
-                if (cell.Value.ToString() == "Padding")
+                if (cell.Value.ToString() == "*Padding*")
                 {
                     cell.Style.BackColor = Color.LightPink;
                     row.Cells[1].Style.BackColor = Color.LightPink;
