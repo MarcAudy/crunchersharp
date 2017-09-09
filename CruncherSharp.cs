@@ -479,22 +479,9 @@ namespace CruncherSharp
             {
                 DataGridViewRow selectedRow = dataGridViewSymbolInfo.SelectedRows[0];
                 SymbolInfo info = selectedRow.Tag as SymbolInfo;
-                if (info != null)
+                if (info != null && info.m_typeName != null)
                 {
-                    SelectSymbol(info.m_typeName);
-                }
-            }
-        }
-
-        void SelectSymbol(string name)
-        {
-            foreach (DataGridViewRow dr in dataGridSymbols.Rows)
-            {
-                DataGridViewCell dc = dr.Cells[0];  // name
-                if (dc.Value.ToString() == name)
-                {
-                    dataGridSymbols.CurrentCell = dc;
-                    break;
+                    textBoxFilter.Text = info.m_typeName;
                 }
             }
         }
