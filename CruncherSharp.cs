@@ -46,6 +46,8 @@ namespace CruncherSharp
                     return;
                 }
 
+				this.Text = "Cruncher # - " + System.IO.Path.GetFileName(openPdbDialog.FileName);
+
                 Cursor.Current = Cursors.WaitCursor;
                 IDiaEnumSymbols allSymbols;
                 m_session.findChildren(m_session.globalScope, SymTagEnum.SymTagUDT, null, 0, out allSymbols);
