@@ -14,7 +14,8 @@ namespace CruncherSharp
         public CruncherSharp()
         {
             InitializeComponent();
-            m_table = CreateDataTable();
+			BindControlMouseClicks(this);
+			m_table = CreateDataTable();
             bindingSourceSymbols.DataSource = m_table;
             dataGridSymbols.DataSource = bindingSourceSymbols;
 
@@ -55,6 +56,7 @@ namespace CruncherSharp
 				// Temporarily clear the filter so, if current filter is invalid, we don't generate a ton of exceptions while populating the table
 				var preExistingFilter = textBoxFilter.Text;
 				textBoxFilter.Text = "";
+				bUpdateStack = false;
 
 				{
 					PopulateDataTable(m_table, allSymbols);
@@ -66,6 +68,7 @@ namespace CruncherSharp
 				}
 
 				// Restore the filter now that the table is populated
+				bUpdateStack = true;
 				textBoxFilter.Text = preExistingFilter;
 
 				ShowSelectedSymbolInfo();
@@ -294,6 +297,9 @@ namespace CruncherSharp
         Dictionary<string, SymbolInfo> m_symbols = new Dictionary<string, SymbolInfo>();
         DataTable m_table = null;
         long m_prefetchStartOffset = 0;
+		Stack<string> UndoStack = new Stack<string>();
+		Stack<string> RedoStack = new Stack<string>();
+		bool bUpdateStack = true;
 
         private void dataGridSymbols_SelectionChanged(object sender, EventArgs e)
         {
@@ -320,6 +326,12 @@ namespace CruncherSharp
             {
                 return;
             }
+
+			if (bUpdateStack && (UndoStack.Count == 0 || info.m_name != UndoStack.Peek()))
+			{
+				RedoStack.Clear();
+				UndoStack.Push(info.m_name);
+			}
 
             long cacheLineSize = (long)GetCacheLineSize();
             long prevCacheBoundaryOffset = m_prefetchStartOffset;
@@ -528,5 +540,64 @@ namespace CruncherSharp
                 }
             }
         }
-    }
+
+		private void buttonHistoryBack_Click(object sender, EventArgs e)
+		{
+			if (UndoStack.Count > 1)
+			{
+				RedoStack.Push(UndoStack.Pop());
+
+				bUpdateStack = false;
+				textBoxFilter.Text = UndoStack.Peek();
+				bUpdateStack = true;
+			}
+		}
+
+		private void buttonHistoryForward_Click(object sender, EventArgs e)
+		{
+			if (RedoStack.Count > 0)
+			{
+				UndoStack.Push(RedoStack.Pop());
+
+				bUpdateStack = false;
+				textBoxFilter.Text = UndoStack.Peek();
+				bUpdateStack = true;
+			}
+		}
+
+		private void CruncherSharp_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.XButton1)
+			{
+				buttonHistoryBack.PerformClick();
+			}
+			else if (e.Button == MouseButtons.XButton2)
+			{
+				buttonHistoryForward.PerformClick();
+			}
+		}
+
+		private void BindControlMouseClicks(Control con)
+		{
+			con.MouseClick += delegate (object sender, MouseEventArgs e)
+			{
+				TriggerMouseClicked(sender, e);
+			};
+			// bind to controls already added
+			foreach (Control i in con.Controls)
+			{
+				BindControlMouseClicks(i);
+			}
+			// bind to controls added in the future
+			con.ControlAdded += delegate (object sender, ControlEventArgs e)
+			{
+				BindControlMouseClicks(e.Control);
+			};
+		}
+
+		private void TriggerMouseClicked(object sender, MouseEventArgs e)
+		{
+			CruncherSharp_MouseDown(sender, e);
+		}
+	}
 }
