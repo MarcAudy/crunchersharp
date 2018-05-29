@@ -292,7 +292,7 @@ namespace CruncherSharp
                 SymbolInfo info = selectedRow.Tag as SymbolInfo;
                 if (info != null && info.m_typeName != null)
                 {
-                    textBoxFilter.Text = info.m_typeName;
+                    textBoxFilter.Text = info.m_typeName.Replace("*", "[*]");
                 }
             }
         }
